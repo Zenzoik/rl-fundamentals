@@ -94,7 +94,7 @@ class ValueIteration:
         while True:
 
             # HOMEWORK: delta <- 0
-            delta: float  = None  # TODO: Implement this assignment
+            delta: float = 0
 
             # Efficiently calculate expected returns for all states
             self._update_expected_return_array()
@@ -112,7 +112,7 @@ class ValueIteration:
                     best_return = -np.inf
 
                     # HOMEWORK: store old value ("v <- V(s)"). c.f. self.value
-                    old_value: float  = None  # TODO: Implement this assignment
+                    old_value: float = self.value[state_1, state_2]
 
                     # Loop through all possible actions
                     for action in available_actions:
@@ -120,7 +120,7 @@ class ValueIteration:
                         # HOMEWORK: the environment object has a method that computes the next state given the current state
                         # and the action.
                         # Use this method to compute the next state: next_state = env.compute_next_state(...)
-                        next_state = None  # TODO: Implement this assignment
+                        next_state = self.env.compute_next_state((state_1, state_2), action)
 
                         # If these new states fall outside the range of possible states, then continue
                         if next_state is None:
@@ -142,13 +142,13 @@ class ValueIteration:
                             best_action = action
 
                     # HOMEWORK: update value as best return ("V_*(s) <- max_a{expected_return}")
-                    # TODO: Implement this line
+                    self.value[state_1, state_2] = best_return
 
                     # HOMEWORK: Update policy with best action
-                    # TODO: Implement this line
+                    self.policy[state_1, state_2] = best_action
 
                     # HOMEWORK: delta <- max(delta, |v - V(s)|)
-                    delta = None  # TODO: Implement this assignment
+                    delta = max(delta, abs(old_value - self.value[state_1, state_2]))
 
             print(f"Value improvement: loop {loop_idx}, delta = {delta}")
 
@@ -159,7 +159,8 @@ class ValueIteration:
 
             # HOMEWORK START: (2 lines)
             # If delta < self.theta, then the value function has converged, and policy evaluation can stop (break loop)
-            pass  # TODO: Implement this section
+            if delta < self.theta:
+                break
             # HOMEWORK END
 
         return self.policy, self.value
