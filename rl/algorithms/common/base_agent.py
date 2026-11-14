@@ -34,8 +34,8 @@ class BaseAgent(ABC):
         """
         Sets the random seed for reproducibility.
         """
-        np.random.seed(self.random_seed)
-        random.seed(self.random_seed)
+        np.random.seed(int(self.random_seed))
+        random.seed(int(self.random_seed))
 
     @abstractmethod
     def reset(self):

@@ -46,10 +46,10 @@ class DynaPlusModel(DynaModel):
         if state not in self.model.keys():
             for a in range(self.num_actions):
                 # HOMEWORK: If state is newly encountered, initialise all actions with (reward=0, next_state=state)
-                # TODO: Implement this line
+                self.model[state][a] = (0, state)
 
         # HOMEWORK: Add the actual transition
-        # TODO: Implement this line
+        self.model[state][action] = (reward, next_state)
 
 
 class TimeSinceLastEncountered(QValueTable):
@@ -87,10 +87,10 @@ class TimeSinceLastEncountered(QValueTable):
             action (int): The action to reset.
         """
         # HOMEWORK: Increment values for all (S, A) pairs by 1
-        # TODO: Implement this line
+        self.values += 1
 
         # HOMEWORK: Except for the (state, action) pair, which is reset to 0 (use self.update with the right arguments)
-        # TODO: Implement this line
+        self.update(state, action, 0)
 
 
 class DynaPlus(Dyna):
@@ -150,6 +150,35 @@ class DynaPlus(Dyna):
             num_episodes (int): Number of episodes to train the agent for.
         """
         # HOMEWORK STARTS: Implement the Dyna-Q+ algorithm (~25-30 lines).
+        for episode in range(num_episodes):
+            state, _ = self.env.reset()
+            done = False
+            while not done:
+                # real step (epsilon-greedy)
+                action = self.act(state)
+                next_state, reward, terminated, truncated, _ = self.env.step(action)
 
-pass  # TODO: Implement this section
+                # direct RL update (Q-learning), no bonus for real experience
+                td_target = reward + self.gamma * np.max(self.q_values.get(next_state))
+                td_error = td_target - self.q_values.get(state, action)
+                self.q_values.update(state, action, self.q_values.get(state, action) + self.alpha * td_error)
+
+                # update model and time since last encountered
+                self.model.add(state, action, reward, next_state)
+                self.time_since_last_encountered.increment(state, action)
+
+                # planning with exploration bonus kappa * sqrt(tau)
+                for _ in range(self.n_planning_steps):
+                    s, a = self.model.sample_state_action()
+                    r, s_next = self.model.get(s, a)
+                    r = r + self.kappa * np.sqrt(self.time_since_last_encountered.get(s, a))
+                    target = r + self.gamma * np.max(self.q_values.get(s_next))
+                    error = target - self.q_values.get(s, a)
+                    self.q_values.update(s, a, self.q_values.get(s, a) + self.alpha * error)
+
+                state = next_state
+                self.logger.log_timestep(reward)
+                done = terminated or truncated
+
+            self.logger.log_episode()
         # HOMEWORK ENDS

@@ -40,7 +40,7 @@ class DynaModel:
             next_state (int): The next state after taking the action.
         """
         # HOMEWORK: Add a (r, s') transition to the model for a given (s, a) pair.
-        # TODO: Implement this line
+        self.model[state][action] = (reward, next_state)
 
     def get(self, state: int, action: int) -> Tuple[float, int]:
         """
@@ -64,11 +64,11 @@ class DynaModel:
         """
         # HOMEWORK: sample a random state and action from the model. Use random.choice() alongside list() to sample from
         # the keys of the model dictionary (top-level keys are states).
-        state: int  = None  # TODO: Implement this assignment
+        state: int = random.choice(list(self.model.keys()))
 
         # HOMEWORK: sample a random action from the model. Use random.choice() alongside list() to sample from
         # the keys of the nested dictionary (second-level keys are actions).
-        action: int  = None  # TODO: Implement this assignment
+        action: int = random.choice(list(self.model[state].keys()))
 
         return state, action
 
@@ -129,5 +129,33 @@ class Dyna(TemporalDifferenceAgent):
         # HOMEWORK STARTS: Implement the Dyna algorithm (~25-30 lines).
         # Remember this is very similar to the Q-learning implementation, but with an additional internal planning loop.
         # Inspect and use the new attributes: self.model, self.n_planning_steps.
-        pass  # TODO: Implement this section
+        for episode in range(num_episodes):
+            state, _ = self.env.reset()
+            done = False
+            while not done:
+                # real step (epsilon-greedy)
+                action = self.act(state)
+                next_state, reward, terminated, truncated, _ = self.env.step(action)
+
+                # direct RL update (Q-learning)
+                td_target = reward + self.gamma * np.max(self.q_values.get(next_state))
+                td_error = td_target - self.q_values.get(state, action)
+                self.q_values.update(state, action, self.q_values.get(state, action) + self.alpha * td_error)
+
+                # remember what happened in the model
+                self.model.add(state, action, reward, next_state)
+
+                # planning: replay random transitions from the model
+                for _ in range(self.n_planning_steps):
+                    s, a = self.model.sample_state_action()
+                    r, s_next = self.model.get(s, a)
+                    target = r + self.gamma * np.max(self.q_values.get(s_next))
+                    error = target - self.q_values.get(s, a)
+                    self.q_values.update(s, a, self.q_values.get(s, a) + self.alpha * error)
+
+                state = next_state
+                self.logger.log_timestep(reward)
+                done = terminated or truncated
+
+            self.logger.log_episode()
         # HOMEWORK ENDS
