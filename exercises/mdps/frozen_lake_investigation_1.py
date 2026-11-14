@@ -36,14 +36,18 @@ def solve_two_by_two():
     # Write down in matrix form, Av = b, where A is the transition matrix, v is the state values,
     # and b is the reward vector. Fill in the elements of the A and b array below (replace the None values).
     # Write elements as a function of the discount factor GAMMA.
+    # v(s) = sum_a pi(a|s) * (r + gamma * v(s')), every action has probability 1/4
+    # state 0: up/left -> 0, right -> 1, down -> 2   (no reward)
+    # state 1: up/right -> 1, left -> 0, down -> 3 (goal, reward 1)
+    # state 2: down/left -> 2, up -> 0, right -> 3 (goal, reward 1)
     A = np.array([
-        [None, None, None],
-        [None, None, None],
-        [None, None, None],
+        [1 - GAMMA / 2, -GAMMA / 4, -GAMMA / 4],
+        [-GAMMA / 4, 1 - GAMMA / 2, 0],
+        [-GAMMA / 4, 0, 1 - GAMMA / 2],
     ])
 
     # Define the reward vector
-    b = np.array([None, None, None])
+    b = np.array([0, 1 / 4, 1 / 4])
     # ASSIGNMENT END
 
 
@@ -69,16 +73,22 @@ def solve_three_by_three():
     # Work out the transition matrix A for the 3x3 map provided (note the holes).
     # Only states 0, 1, 2, 4, and 7 are non-terminal, so the matrix is 5x5.
     # Replace the None values with the correct expressions in terms of the discount factor GAMMA.
+    # unknowns are v0, v1, v2, v4, v7 (states 3, 5, 6 are holes and 8 is the goal)
+    # state 0: up/left -> 0, right -> 1, down -> 3 (hole)
+    # state 1: up -> 1, left -> 0, right -> 2, down -> 4
+    # state 2: up/right -> 2, left -> 1, down -> 5 (hole)
+    # state 4: up -> 1, down -> 7, left -> 3 (hole), right -> 5 (hole)
+    # state 7: up -> 4, down -> 7, left -> 6 (hole), right -> 8 (goal, reward 1)
     A = np.array([
-        [None, None, None, None, None],
-        [None, None, None, None, None],
-        [None, None, None, None, None],
-        [None, None, None, None, None],
-        [None, None, None, None, None],
+        [1 - GAMMA / 2, -GAMMA / 4, 0, 0, 0],
+        [-GAMMA / 4, 1 - GAMMA / 4, -GAMMA / 4, -GAMMA / 4, 0],
+        [0, -GAMMA / 4, 1 - GAMMA / 2, 0, 0],
+        [0, -GAMMA / 4, 0, 1, -GAMMA / 4],
+        [0, 0, 0, -GAMMA / 4, 1 - GAMMA / 4],
     ])
 
     # Define the reward vector
-    b = np.array([None, None, None, None, None])
+    b = np.array([0, 0, 0, 0, 1 / 4])
     # ASSIGNMENT END
 
 

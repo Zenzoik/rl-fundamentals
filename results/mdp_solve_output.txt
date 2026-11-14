@@ -1,0 +1,13 @@
+Solving 2x2 Frozen Lake:
+State Values:
+0.118 0.353 
+0.353 0.000 
+
+
+Solving 3x3 Frozen Lake:
+State Values:
+0.001 0.006 0.001 
+0.000 0.037 0.000 
+0.000 0.291 0.000 
+
+
