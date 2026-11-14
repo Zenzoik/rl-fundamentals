@@ -37,6 +37,23 @@ class ExpectedSarsa(TemporalDifferenceAgent):
             num_episodes (int): Number of episodes to train the agent.
         """
         # HOMEWORK BEGINS: Implement the Expected Sarsa algorithm (~14 lines). Refer to the Sarsa implementation.
+        for episode in range(num_episodes):
+            state, _ = self.env.reset()
+            done = False
+            while not done:
+                action = self.act(state)
+                next_state, reward, terminated, truncated, _ = self.env.step(action)
 
-pass  # TODO: Implement this section
+                # target uses the average of Q(S', a) under the current epsilon-greedy policy
+                probs = self.policy.compute_probs(next_state, self.q_values)
+                expected_q = np.sum(probs * self.q_values.get(next_state))
+                td_target = reward + self.gamma * expected_q
+                td_error = td_target - self.q_values.get(state, action)
+                self.q_values.update(state, action, self.q_values.get(state, action) + self.alpha * td_error)
+
+                state = next_state
+                self.logger.log_timestep(reward)
+                done = terminated or truncated
+
+            self.logger.log_episode()
         # HOMEWORK ENDS

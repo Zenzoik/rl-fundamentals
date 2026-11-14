@@ -45,19 +45,19 @@ def argmax_ties_random(q_values: np.ndarray) -> int:
         if q_values[i] > top:
 
             # HOMEWORK: reset "top" value as the current action value
-            top = None  # TODO: Implement this assignment
+            top = q_values[i]
 
             # HOMEWORK: reset the ties list as a list length 1, only containing this action
-            ties = None  # TODO: Implement this assignment
+            ties = [i]
 
         # If current action value ties with previous best...
         elif q_values[i] == top:
 
             # HOMEWORK: append this action to the "ties" list
-            # TODO: Implement this line
+            ties.append(i)
 
     # HOMEWORK: use np.random.choice to select an action with uniform probability from the ties list
-    selected_action = None  # TODO: Implement this assignment
+    selected_action = np.random.choice(ties)
 
     return selected_action
 

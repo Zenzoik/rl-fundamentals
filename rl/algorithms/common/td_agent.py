@@ -57,7 +57,7 @@ class TemporalDifferenceAgent(BaseAgent):
             int: The action selected by the policy.
         """
         # HOMEWORK: Select the action from the policy
-        action: int  = None  # TODO: Implement this assignment
+        action: int = self.policy.select_action(state, self.q_values)
         return action
 
     def learn(self, num_episodes: int = 500) -> None:

@@ -41,33 +41,36 @@ class Sarsa(TemporalDifferenceAgent):
 
             # HOMEWORK: Choose A from S using policy derived from Q (epsilon-greedy)
             # N.B. Implement the act method in the TemporalDifferenceAgent superclass
-            action: int  = None  # TODO: Implement this assignment
+            action: int = self.act(state)
 
             # Loop over each step of episode, until S is terminal
             done: bool = False
             while not done:
 
                 # HOMEWORK: Make a step of the environment; observe R, S'
-                next_state, reward, terminated, truncated, _ = None  # TODO: Implement this assignment
+                next_state, reward, terminated, truncated, _ = self.env.step(action)
 
                 # HOMEWORK: Choose A' from S' using policy derived from Q (epsilon-greedy)
-                next_action: int  = None  # TODO: Implement this assignment
+                next_action: int = self.act(next_state)
 
                 # HOMEWORK STARTS: (~3-4 lines).
                 # Update Q(S, A), taking as target the TD target (R + gamma * Q(S', A'))
                 # You ultimately want to update via self.q_values.update(...)
-                pass  # TODO: Implement this section
+                td_target = reward + self.gamma * self.q_values.get(next_state, next_action)
+                td_error = td_target - self.q_values.get(state, action)
+                self.q_values.update(state, action, self.q_values.get(state, action) + self.alpha * td_error)
                 # HOMEWORK ENDS
 
                 # HOMEWORK STARTS: S <- S', A <- A' (2 lines)
-                pass  # TODO: Implement this section
+                state = next_state
+                action = next_action
                 # HOMEWORK ENDS
 
                 # HOMEWORK: Add reward to episode reward log (self.logger.log_timestep(...))
-                # TODO: Implement this line
+                self.logger.log_timestep(reward)
 
                 # HOMEWORK: If S is terminal, then episode is done (will exit "while" loop)
-                done = None  # TODO: Implement this assignment
+                done = terminated or truncated
 
             # Add episode reward to list
             self.logger.log_episode()
