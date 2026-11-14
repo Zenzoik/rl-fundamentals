@@ -83,7 +83,7 @@ class MCExploringStartsAgent(MonteCarloAgent):
             int: The action selected by the policy.
         """
         # HOMEWORK: use a method from the policy to select an action
-        action: int  = None  # TODO: Implement this assignment
+        action: int = self.policy.select_action(state)
 
         return action
 
@@ -103,14 +103,14 @@ class MCExploringStartsAgent(MonteCarloAgent):
 
             # HOMEWORK: Generate an episode.
             # There is a helper method for this within the superclass. Make sure to use exploring starts.
-            # TODO: Implement this line
+            episode = self._generate_episode(exploring_starts=True)
 
             # Loop through the episode in reverse order, updating the q-values and policy
             returns: float = 0
             for t, (state, action, reward) in enumerate(reversed(episode)):
 
                 # HOMEWORK: G <- gamma * G + R_t+1
-                returns = None  # TODO: Implement this assignment
+                returns = self.gamma * returns + reward
 
                 # If the S_t, A_t pair has been seen before, continue to next for loop iteration
                 # (this bit enacts first-visit MC)
@@ -123,17 +123,17 @@ class MCExploringStartsAgent(MonteCarloAgent):
 
                 # HOMEWORK: Calculate the monte carlo error, G - Q(S_t, A_t).
                 # Use the q_values dictionary to get the current estimate.
-                mc_error: float  = None  # TODO: Implement this assignment
+                mc_error: float = returns - self.q_values.get(state, action)
 
                 # HOMEWORK: Increment N(St, At).
                 # self.state_action_stats tracks N(St, At), and has a method to update it.
-                # TODO: Implement this line
+                self.state_action_stats.update(state, action)
 
                 # HOMEWORK: step_size = 1 / N(St, At)
-                step_size: float  = None  # TODO: Implement this assignment
+                step_size: float = 1 / self.state_action_stats.get(state, action)
 
                 # HOMEWORK: Calculate NewEstimate = OldEstimate + 1/N(St, At) * (Return - OldEstimate)
-                new_value: float  = None  # TODO: Implement this assignment
+                new_value: float = self.q_values.get(state, action) + step_size * mc_error
 
                 # Update action value array with new estimate
                 self.q_values.update(state, action, new_value)

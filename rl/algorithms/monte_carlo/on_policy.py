@@ -73,7 +73,7 @@ class MCOnPolicy(MonteCarloAgent):
             int: The action selected by the policy.
         """
         # HOMEWORK: sample an action from the epsilon-greedy policy
-        action: int  = None  # TODO: Implement this assignment
+        action: int = self.policy.select_action(state, self.q_values)
 
         return action
 
@@ -92,13 +92,24 @@ class MCOnPolicy(MonteCarloAgent):
             # HOMEWORK: Generate an episode.
             # In the Exploring Starts module, you used `exploring_starts=True`.
             # Here, we want to use `exploring_starts=False`.
-            episode = None  # TODO: Implement this assignment
+            episode = self._generate_episode(exploring_starts=False)
 
             # Loop through the episode in reverse order, updating the q-values and policy
             # HOMEWORK STARTS: (~10 lines of code) Update the q-values by looping through the episode in reverse order.
             # This part of the code is almost identical to the Exploring Starts module learn method,
             # but note that we do not need the final line to update the policy here.
-            pass  # TODO: Implement this section
+            returns: float = 0
+            for t, (state, action, reward) in enumerate(reversed(episode)):
+                returns = self.gamma * returns + reward
+
+                # first-visit MC: skip if (state, action) appears earlier in the episode
+                if self._is_subelement_present((state, action), episode[:len(episode) - t - 1]):
+                    continue
+
+                self.state_action_stats.update(state, action)
+                step_size = 1 / self.state_action_stats.get(state, action)
+                mc_error = returns - self.q_values.get(state, action)
+                self.q_values.update(state, action, self.q_values.get(state, action) + step_size * mc_error)
             # HOMEWORK ENDS
 
             # Log the episode
