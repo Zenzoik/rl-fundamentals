@@ -110,7 +110,7 @@ def monte_carlo_pentagram_area(
     log: List[Tuple[Tuple[float, float], bool]] = []
     area_estimates: List[float] = []
     # HOMEWORK: input the area of the square bounding the unit circle (i.e. whose radius is 1)
-    area_square: float  = None  # TODO: Implement this assignment
+    area_square: float = 2 * 2
 
     # Sample points within the square bounding the unit circle
     for num in range(num_samples):
@@ -118,10 +118,11 @@ def monte_carlo_pentagram_area(
         y: float = random.uniform(-1, 1)
 
         # HOMEWORK: use the helper function to check if the point is inside the pentagram
-        inside: bool  = None  # TODO: Implement this assignment
+        inside: bool = is_inside_pentagram(x, y)
 
         # HOMEWORK STARTS: if the point is inside the pentagram, increment the inside_count (1-2 lines)
-        pass  # TODO: Implement this section
+        if inside:
+            inside_count += 1
         # HOMEWORK ENDS
 
         log.append(((x, y), inside))
@@ -129,10 +130,10 @@ def monte_carlo_pentagram_area(
         # HOMEWORK: Area estimate is the ratio of points inside the pentagram to the total points sampled
         # N.B. `num` is 0-indexed, so we add 1 to the denominator to avoid division by zero
         # N.B., needs to be multiplied by the area of the square bounding the unit circle
-        area_estimate: float  = None  # TODO: Implement this assignment
+        area_estimate: float = inside_count / (num + 1) * area_square
 
         # HOMEWORK: append current area estimate to list of area estimates (this will provide a history of estimates)
-        # TODO: Implement this line
+        area_estimates.append(area_estimate)
 
     final_estimate: float = area_estimates[-1]
     return final_estimate, area_estimates, log

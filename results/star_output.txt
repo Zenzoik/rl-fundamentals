@@ -1,0 +1,12 @@
+samples=1000
+Final estimated area of pentagram: 1.068000
+Exact area of pentagram: 1.122570
+samples=5000
+Final estimated area of pentagram: 1.087200
+Exact area of pentagram: 1.122570
+samples=10000
+Final estimated area of pentagram: 1.137200
+Exact area of pentagram: 1.122570
+samples=20000
+Final estimated area of pentagram: 1.137800
+Exact area of pentagram: 1.122570
