@@ -1,0 +1,14 @@
+﻿/rl/environment/.data/
+/rl/algorithms/dynamic_programming/.data/
+/assignments/.data/
+/venv/
+/.venv/
+/stitched_videos/
+/videos/
+/.data/
+/.pytest_cache/
+/.ruff_cache/
+**/__pycache__/
+/.venv/
+__pycache__/
+*.pyc
